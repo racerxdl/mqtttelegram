@@ -6,14 +6,14 @@ RUN apk update && apk add python python-dev python3 make gcc g++ autoconf bash i
 
 RUN npm -g install yarn
 
-RUN mkdir -p /opt/ircredirect
-COPY . /opt/ircredirect
+RUN mkdir -p /opt/mqtttelegram
+COPY . /opt/mqtttelegram
 
-WORKDIR /opt/ircredirect
+WORKDIR /opt/mqtttelegram
 
 RUN yarn
 
 ENV mqtt_server "mosquitto.mosquitto"
 ENV mqtt_topic "ircredirect"
 
-CMD node /opt/ircredirect/server.js
+CMD node /opt/mqtttelegram/broker.js

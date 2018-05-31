@@ -1,6 +1,6 @@
 #!/usr/bin/env nodejs
 
-// IRC to MQTT Message Redirection
+// MQTT to Telegram Message Broker
 // Copyright (C) 2016  Lucas Teske
 
 // This program is free software: you can redistribute it and/or modify

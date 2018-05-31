@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "MQTT <> Telegram Broker",
   "author": "Lucas Teske <lucas@teske.net.br>",
-  "license": "GPL",
+  "license": "GPL-3.0",
   "dependencies": {
     "mqtt": "^2.18.0",
     "node-telegram-bot-api": "^0.23.3",

@@ -22,7 +22,6 @@ const mqtt = require('mqtt')
 const TelegramBot = require('node-telegram-bot-api');
 
 const telegramBotToken = process.env['telegram_bot_token'];
-const defaultGroupId = !undefinedOrNull(process.env['telegram_group_id']) ? parseInt(process.env['telegram_group_id'], 10) : null;
 const mqttHost = process.env['mqtt_server'];
 const telegramAdminId = process.env['telegram_admin'];
 const msgToName = process.env['mqtt_message_to'];
@@ -45,9 +44,6 @@ MQTTLog.headPadding = 30;
 if (undefinedOrNull(telegramBotToken)) {
   GlobalLog.error(`Telegram Bot Token was not defined! Please define at environment variable ${'telegram_bot_token'.warn.bold}`);
 }
-if (undefinedOrNull(defaultGroupId)) {
-  GlobalLog.error(`Telegram Group ID was not defined! Please define at environment variable ${'telegram_group_id'.warn.bold}`);
-}
 if (undefinedOrNull(mqttHost)) {
   GlobalLog.error(`MQTT Server was not defined! Please define at environment variable ${'mqtt_server'.warn.bold}`);
 }
@@ -59,7 +55,7 @@ if (undefinedOrNull(groupToTopic)) {
   GlobalLog.warn(`Format: groupId:mqttTopic:messageTo;groupId2:mqttTopic2:messageTo2`);
 }
 
-if (undefinedOrNull(telegramBotToken) || undefinedOrNull(defaultGroupId) || undefinedOrNull(groupToTopic) || undefinedOrNull(mqttHost)) {
+if (undefinedOrNull(telegramBotToken) || undefinedOrNull(groupToTopic) || undefinedOrNull(mqttHost)) {
   GlobalLog.fatal('One or more environment variables not defined. Aborting...');
   process.exit(1);
 }
@@ -84,11 +80,13 @@ groupToTopic.split(';').forEach(m => {
   }
 });
 
+GlobalLog.start('Running');
+
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 const client  = mqtt.connect(`mqtt://${mqttHost}`)
 
 client.on('connect', function () {
-  MQTTLog.success('Connected');
+  MQTTLog.start('Connected');
   client.subscribe('presence');
   Object.keys(topicMaps).forEach(topic => {
     MQTTLog.info(`Subscribing topic ${topic}`);

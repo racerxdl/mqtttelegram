@@ -1,19 +1,28 @@
-FROM node:10.3.0-alpine
+FROM golang:1.12-alpine as build
 
+RUN apk update
+
+RUN apk add git ca-certificates
+
+ADD . /go/src/github.com/racerxdl/mqtttelegram
+
+WORKDIR /go/src/github.com/racerxdl/mqtttelegram
+
+RUN GO111MODULE=on CGO_ENABLED=0 go get -v
+
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o mqtttelegram
+
+
+FROM alpine:latest
 MAINTAINER Lucas Teske <lucas@teske.com.br>
 
-RUN apk update && apk add python python-dev python3 make gcc g++ autoconf bash icu-libs icu-dev
-
-RUN npm -g install yarn
-
+RUN apk --no-cache add ca-certificates
 RUN mkdir -p /opt/mqtttelegram
-COPY . /opt/mqtttelegram
-
 WORKDIR /opt/mqtttelegram
 
-RUN yarn
+COPY --from=build /go/src/github.com/racerxdl/mqtttelegram/mqtttelegram .
 
 ENV mqtt_server "mosquitto.mosquitto"
 ENV mqtt_topic "ircredirect"
 
-CMD node /opt/mqtttelegram/broker.js
+CMD /opt/mqtttelegram/mqtttelegram
